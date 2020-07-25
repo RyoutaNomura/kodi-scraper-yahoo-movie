@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding=utf-8?>
+<scraper framework="1.1" date="2020.07.25" name="yahoomovie" content="movies" language="en">
+  <NfoUrl dest="3">
+    <RegExp input="$$1" output="\1" dest="3">
+      <expression></expression>
+    </RegExp>
+  </NfoUrl>
+  <CreateSearchUrl clearbuffers="no" dest="3">
+    <RegExp input="$$1" output="&lt;url&gt;https://movies.yahoo.co.jp/movie/?query=\1&lt;/url&gt;" dest="3">
+      <expression></expression>
+    </RegExp>
+  </CreateSearchUrl>
+  <GetSearchResults clearbuffers="no" dest="8">
+    <RegExp input="$$6" output="&lt;?xml version=&quot;1.02&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;&lt;results&gt;\1&lt;/results&gt;" dest="8">
+      <RegExp input="$$1" output="&lt;entity&gt;&lt;title&gt;\4&lt;/title&gt;&lt;url&gt;https://movies.yahoo.co.jp/movie/\2/\1/&lt;/url&gt;&lt;url&gt;https://movies.yahoo.co.jp/movie/\2/\1/story/&lt;/url&gt;&lt;url&gt;https://movies.yahoo.co.jp/movie/\2/\1/credit/&lt;/url&gt;&lt;/entity&gt;" dest="6">
+        <expression repeat="yes" noclean="1">&lt;li class="col" data-cinema-id="(.*?)"&gt;.*?&lt;a href=&quot;/movie/(.*?)/([0-9]*?)".*?title="(.*?)"</expression>
+      </RegExp>
+      <expression noclean="1"></expression>
+    </RegExp>
+  </GetSearchResults>
+  <GetDetails dest="4">
+    <RegExp input="$$8" output="&lt;details&gt;\1&lt;/details&gt;" dest="4">
+      <RegExp input="$$1" output="&lt;title&gt;\1&lt;/title&gt;" dest="8">
+        <expression noclean="1">&lt;title&gt;(.*?) (.*)&lt;/title&gt;</expression>
+      </RegExp>
+      <RegExp input="$$1" output="&lt;year&gt;\1&lt;/year&gt;" dest="8+">
+        <expression>製作年度&lt;/th&gt;[\s\S]*&lt;td&gt;([0-9]*)年</expression>
+      </RegExp>
+      <RegExp input="$$1" output="&lt;runtime&gt;\1&lt;/runtime&gt;" dest="8+">
+        <expression>上映時間&lt;/th&gt;[\s\S]*&lt;td&gt;([0-9]*)分</expression>
+      </RegExp>
+      <RegExp input="$$1" output="&lt;director&gt;\1&lt;/director&gt;" dest="8+">
+        <expression>監督&lt;/th&gt;[\s\S]*?&lt;a href=&quot;/person/[0-9]*/&quot;&gt;(.*?)&lt;/a&gt;</expression>
+      </RegExp>
+      <RegExp input="$$1" output="&lt;thumb&gt;\1&lt;/thumb&gt;" dest="8+">
+        <expression>&quot;background-image:url\((.*?)\);&quot;&gt;&lt;/p&gt;</expression>
+      </RegExp>
+      <RegExp input="$$3" output="&lt;actor&gt;&lt;name&gt;\1&lt;/name&gt;&lt;thumb&gt;&lt;/thumb&gt;&lt;/actor&gt;" dest="8+">
+        <expression repeat="yes">&quot;/person/[0-9]*?/info/&quot; class=&quot;listview__element--right-icon&quot; title=&quot;(.*?)&quot;</expression>
+      </RegExp>
+      <RegExp input="$$4" output="&lt;fanart&gt;&lt;thumb&gt;\1&lt;/thumb&gt;&lt;/fanart&gt;" dest="8+">
+        <expression>&lt;img src=&quot;(http://iwiz-movies.c.yimg.jp/c/movies/pict/.*?\.jpg)&quot; alt=&quot;&quot;&gt;</expression>
+      </RegExp>
+      <RegExp input="$$1" output="&lt;genre&gt;\1&lt;/genre&gt;" dest="8+">
+        <expression repeat="yes">/movie/\?genre.*?"&gt;(.*?)&lt;/a&gt;</expression>
+      </RegExp>
+      <RegExp input="$$2" output="&lt;plot&gt;\1&lt;/plot&gt;" dest="8+">
+        <expression trim="yes">&lt;p class=&quot;text-readable&quot;&gt;(.*?)&lt;p class</expression>
+      </RegExp>
+      <expression noclean="1"/>
+    </RegExp>
+  </GetDetails>
+</scraper>
